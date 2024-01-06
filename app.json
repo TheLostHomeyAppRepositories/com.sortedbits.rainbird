@@ -62,6 +62,45 @@
         ]
       }
     ],
+    "conditions": [
+      {
+        "id": "rainbird_is_active",
+        "title": "Rainbird !{{is|isn't}} active",
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      },
+      {
+        "id": "zone_is_active",
+        "title": {
+          "en": "Zone !{{is|isn't}} active"
+        },
+        "titleFormatted": {
+          "en": "Zone [[zone]] !{{is|isn't}} active"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          },
+          {
+            "type": "autocomplete",
+            "name": "zone",
+            "title": {
+              "en": "Zone"
+            },
+            "placeholder": {
+              "en": "Irrigation zone"
+            }
+          }
+        ]
+      }
+    ],
     "actions": [
       {
         "id": "start_zone",

@@ -97,6 +97,22 @@ class RainbirdDevice extends Homey.Device {
     const stopIrrigationAction = this.homey.flow.getActionCard('stop_irrigation');
     this.registerRunListenerStopIrrigation(stopIrrigationAction);
 
+    const zoneIsActive = this.homey.flow.getConditionCard('zone_is_active');
+    this.registerZoneAutocomplete(zoneIsActive);
+
+    zoneIsActive.registerRunListener(async (args) => {
+      if (args.zone) {
+        return this.rainbirdService?.isInUse(args.zone.index);
+      }
+      return false;
+    });
+
+    const rainbirdIsActive = this.homey.flow.getConditionCard('rainbird_is_active');
+    rainbirdIsActive.registerRunListener(async (args) => {
+      return this.rainbirdService?.isInUse();
+    })
+    
+
     await this.instantiateController();
   }
 
