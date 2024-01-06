@@ -1,0 +1,104 @@
+{
+    "triggers": [
+        {
+            "id": "turns_on",
+            "title": {
+                "en": "Rainbird starts irrigation"
+            },
+            "hint": {
+                "en": "When the rainbird turns on any zone"
+            }
+        },
+        {
+            "id": "turns_off",
+            "title": {
+                "en": "Rainbird stops irrigation"
+            },
+            "hint": {
+                "en": "When the rainbird has no active zones"
+            }
+        }
+    ],
+    "actions": [
+        {
+            "id": "start_zone",
+            "title": "Start a zone",
+            "titleFormatted": {
+                "en": "Start zone [[zone]]",
+                "nl": "Start zone [[zone]]"
+            },
+            "args": [
+                {
+                    "type": "autocomplete",
+                    "name": "zone",
+                    "title": {
+                        "en": "Zone"
+                    },
+                    "placeholder": {
+                        "en": "Irrigation zone"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "start_zone_X_minutes",
+            "title": "Start a zone for a certain amount of time",
+            "titleFormatted": {
+                "en": "Start zone [[zone]] for [[minutes]] minutes",
+                "nl": "Start zone [[zone]] voor [[minutes]] minuten"
+            },
+            "args": [
+                {
+                    "type": "autocomplete",
+                    "name": "zone",
+                    "title": {
+                        "en": "Zone"
+                    },
+                    "placeholder": {
+                        "en": "Irrigation zone"
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "minutes",
+                    "title": {
+                        "en": "Time",
+                        "nl": "Tijd"
+                    },
+                    "placeholder": {
+                        "en": "In minutes"
+                    },
+                    "min": 1,
+                    "max": 100
+                }
+            ]
+        },
+        {
+            "id": "stop_zone",
+            "title": "Stop a zone",
+            "titleFormatted": {
+                "en": "Stop zone [[zone]]",
+                "nl": "Stop zone [[zone]]"
+            },
+            "args": [
+                {
+                    "type": "autocomplete",
+                    "name": "zone",
+                    "title": {
+                        "en": "Zone"
+                    },
+                    "placeholder": {
+                        "en": "Irrigation zone"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "stop_irrigation",
+            "title": {
+                "en": "Stop irrigation",
+                "nl": "Stop irrigatie"
+            }
+        }
+    ]
+}

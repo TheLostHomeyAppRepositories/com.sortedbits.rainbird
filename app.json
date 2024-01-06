@@ -1,0 +1,316 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.sortedbits.rainbird",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Rainbird"
+  },
+  "description": {
+    "en": "Control the rain"
+  },
+  "brandColor": "#018752",
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Wim Haanstra",
+    "email": "wim@x256.nl"
+  },
+  "flow": {
+    "triggers": [
+      {
+        "id": "turns_on",
+        "title": {
+          "en": "Rainbird starts irrigation"
+        },
+        "hint": {
+          "en": "When the rainbird turns on any zone"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      },
+      {
+        "id": "turns_off",
+        "title": {
+          "en": "Rainbird stops irrigation"
+        },
+        "hint": {
+          "en": "When the rainbird has no active zones"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "start_zone",
+        "title": "Start a zone",
+        "titleFormatted": {
+          "en": "Start zone [[zone]]",
+          "nl": "Start zone [[zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          },
+          {
+            "type": "autocomplete",
+            "name": "zone",
+            "title": {
+              "en": "Zone"
+            },
+            "placeholder": {
+              "en": "Irrigation zone"
+            }
+          }
+        ]
+      },
+      {
+        "id": "start_zone_X_minutes",
+        "title": "Start a zone for a certain amount of time",
+        "titleFormatted": {
+          "en": "Start zone [[zone]] for [[minutes]] minutes",
+          "nl": "Start zone [[zone]] voor [[minutes]] minuten"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          },
+          {
+            "type": "autocomplete",
+            "name": "zone",
+            "title": {
+              "en": "Zone"
+            },
+            "placeholder": {
+              "en": "Irrigation zone"
+            }
+          },
+          {
+            "type": "number",
+            "name": "minutes",
+            "title": {
+              "en": "Time",
+              "nl": "Tijd"
+            },
+            "placeholder": {
+              "en": "In minutes"
+            },
+            "min": 1,
+            "max": 100
+          }
+        ]
+      },
+      {
+        "id": "stop_zone",
+        "title": "Stop a zone",
+        "titleFormatted": {
+          "en": "Stop zone [[zone]]",
+          "nl": "Stop zone [[zone]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          },
+          {
+            "type": "autocomplete",
+            "name": "zone",
+            "title": {
+              "en": "Zone"
+            },
+            "placeholder": {
+              "en": "Irrigation zone"
+            }
+          }
+        ]
+      },
+      {
+        "id": "stop_irrigation",
+        "title": {
+          "en": "Stop irrigation",
+          "nl": "Stop irrigatie"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      }
+    ]
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Rainbird"
+      },
+      "class": "other",
+      "capabilities": [
+        "active_zone",
+        "zone_time_left",
+        "is_active"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/rainbird/assets/images/small.png",
+        "large": "/drivers/rainbird/assets/images/large.png",
+        "xlarge": "/drivers/rainbird/assets/images/xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "pair"
+        },
+        {
+          "id": "zones",
+          "navigation": {
+            "next": "list_devices"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "rainbird",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Login details"
+          },
+          "children": [
+            {
+              "id": "host",
+              "type": "text",
+              "label": {
+                "en": "Host"
+              },
+              "value": "192.168.1.100",
+              "hint": {
+                "en": "The IP/hostname of the Rainbird",
+                "nl": "Het IP of hostname van de Rainbird"
+              }
+            },
+            {
+              "id": "password",
+              "type": "password",
+              "label": {
+                "en": "Password",
+                "nl": "Wachtwoord"
+              },
+              "value": "somevalue",
+              "hint": {
+                "en": "The password to access the Rainbird",
+                "nl": "Het wachtwoord om toegang te krijgen tot de Rainbird"
+              }
+            }
+          ]
+        },
+        {
+          "id": "defaultIrrigationTime",
+          "type": "number",
+          "label": {
+            "en": "Default irrigation time",
+            "nl": "Standaard irrigatie tijd"
+          },
+          "value": 15,
+          "hint": {
+            "en": "The time a zone is turned on, when no specific time is specified, in minutes.",
+            "nl": "De tijd die een zone wordt aangezet, wanneer er geen specifieke tijd wordt opgegeven, in minuten."
+          }
+        },
+        {
+          "id": "enableQueueing",
+          "type": "checkbox",
+          "label": {
+            "en": "Command queueing",
+            "nl": "Command wachtrij"
+          },
+          "value": false,
+          "hint": {
+            "en": "When queueing is enabled, new irrigation commands will be completed in order they are given, otherwise the currect command will be cancelled and the new command immediatly started.",
+            "nl": "Wanneer dit aan staat, worden commando's in een wachtrij geplaatst en op volgorde uitgevoerd, anders wordt het huidige commando afgebroken en het nieuwe commando direct gestart."
+          }
+        }
+      ]
+    }
+  ],
+  "capabilities": {
+    "active_zone": {
+      "type": "string",
+      "title": {
+        "en": "Active zone",
+        "nl": "Actieve zone"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "uiQuickAction": true,
+      "icon": "/assets/capabilities/zone.svg"
+    },
+    "is_active": {
+      "type": "boolean",
+      "title": {
+        "en": "Is active",
+        "nl": "Is actief"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "uiQuickAction": true,
+      "icon": "/assets/capabilities/toggle.svg"
+    },
+    "zone_time_left": {
+      "type": "string",
+      "title": {
+        "en": "Time left",
+        "nl": "Tijd"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "uiQuickAction": true,
+      "icon": "/assets/capabilities/timer.svg"
+    }
+  }
+}

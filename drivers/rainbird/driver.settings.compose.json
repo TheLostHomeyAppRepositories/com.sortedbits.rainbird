@@ -1,0 +1,59 @@
+[
+    {
+        "type": "group",
+        "label": { "en": "Login details" },
+        "children": [
+            {
+                "id": "host",
+                "type": "text",
+                "label": {
+                    "en": "Host"
+                },
+                "value": "192.168.1.100",
+                "hint": {
+                    "en": "The IP/hostname of the Rainbird",
+                    "nl": "Het IP of hostname van de Rainbird"
+                }
+            },
+            {
+                "id": "password",
+                "type": "password",
+                "label": {
+                    "en": "Password",
+                    "nl": "Wachtwoord"
+                },
+                "value": "somevalue",
+                "hint": {
+                    "en": "The password to access the Rainbird",
+                    "nl": "Het wachtwoord om toegang te krijgen tot de Rainbird"
+                }
+            }
+        ]
+    },
+    {
+        "id": "defaultIrrigationTime",
+        "type": "number",
+        "label": {
+            "en": "Default irrigation time",
+            "nl": "Standaard irrigatie tijd"
+        },
+        "value": 15,
+        "hint": {
+            "en": "The time a zone is turned on, when no specific time is specified, in minutes.",
+            "nl": "De tijd die een zone wordt aangezet, wanneer er geen specifieke tijd wordt opgegeven, in minuten."
+        }
+    },
+    {
+        "id": "enableQueueing",
+        "type": "checkbox",
+        "label": {
+            "en": "Command queueing",
+            "nl": "Command wachtrij"
+        },
+        "value": false,
+        "hint": {
+            "en": "When queueing is enabled, new irrigation commands will be completed in order they are given, otherwise the currect command will be cancelled and the new command immediatly started.",
+            "nl": "Wanneer dit aan staat, worden commando's in een wachtrij geplaatst en op volgorde uitgevoerd, anders wordt het huidige commando afgebroken en het nieuwe commando direct gestart."
+        }
+    }
+]

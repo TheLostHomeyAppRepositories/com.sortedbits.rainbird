@@ -1,0 +1,29 @@
+{
+  "id": "com.sortedbits.rainbird",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Rainbird"
+  },
+  "description": {
+    "en": "Control the rain"
+  },
+  "brandColor": "#018752",
+  "category": [
+    "tools"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Wim Haanstra",
+    "email": "wim@x256.nl"
+  }
+}

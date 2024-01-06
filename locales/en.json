@@ -1,0 +1,20 @@
+{
+    "login": {
+        "title": "Rainbird login",
+        "host": "Host",
+        "password": "Password"
+    },
+    "settings": {
+        "defaultIrrigationTime": "Default irrigation time",
+        "enableQueueing": "Enable queueing"
+    },
+    "flow": {
+        "continue": "Continue"
+    },
+    "zones": {
+        "model": "Device model",
+        "title": "Zone definitions",
+        "description": "Please specify names for your zones here. Leaving them empty will disable them in the interface.",
+        "zone": "Zone"
+    }
+}

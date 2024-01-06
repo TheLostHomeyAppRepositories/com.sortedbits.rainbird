@@ -1,0 +1,13 @@
+ 
+{
+    "type": "string",
+    "title": { 
+        "en": "Time left",
+        "nl": "Tijd"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "uiQuickAction": true,
+    "icon": "/assets/capabilities/timer.svg"
+  }

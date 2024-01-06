@@ -1,0 +1,13 @@
+ 
+{
+    "type": "string",
+    "title": { 
+        "en": "Active zone",
+        "nl": "Actieve zone"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "uiQuickAction": true,
+    "icon": "/assets/capabilities/zone.svg"
+  }

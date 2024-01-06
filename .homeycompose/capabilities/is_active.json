@@ -1,0 +1,13 @@
+ 
+{
+    "type": "boolean",
+    "title": { 
+        "en": "Is active",
+        "nl": "Is actief"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "uiQuickAction": true,
+    "icon": "/assets/capabilities/toggle.svg"
+  }
