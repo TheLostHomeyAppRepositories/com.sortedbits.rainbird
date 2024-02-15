@@ -1,11 +1,11 @@
 import Homey from 'homey';
 import { ArgumentAutocompleteResults } from 'homey/lib/FlowCard';
-import { RainBirdService } from '../../RainBird/RainBirdService';
+
 import { Zone } from './zone';
 
 class RainbirdDevice extends Homey.Device {
 
-  rainbirdService: RainBirdService | undefined;
+  rainbirdService: any | undefined;
   zones: Zone[] = [];
   endTime: Date | undefined = undefined;
   cancelLoop: boolean = true;
@@ -13,8 +13,21 @@ class RainbirdDevice extends Homey.Device {
   enableQueueing: boolean = false;
   timeoutId: NodeJS.Timeout | undefined;
 
+  getCurrentZoneId = (): number | undefined => {
+    const zones = this.rainbirdService?.zones;
+
+    for (const zone of zones ?? []) {
+      if (this.rainbirdService?.isActive(zone)) {
+        return zone;
+      }
+    }
+
+    return undefined;
+  }
+
   async getCurrentStatus(initial: boolean = false) {
     const isInUse = this.rainbirdService?.isInUse() ?? false;
+    const currentZoneId = this.getCurrentZoneId();
 
     if (!initial && isInUse !== this.getCapabilityValue('is_active')) {
       const card = isInUse ? 'turns_on' : 'turns_off';
@@ -25,15 +38,15 @@ class RainbirdDevice extends Homey.Device {
 
     await this.setCapabilityValue('is_active', isInUse);
 
-    if (this.rainbirdService?.currentZoneId) {
-      const zone = this.zones.find((z) => z.index === this.rainbirdService?.currentZoneId);
+    if (currentZoneId) {
+      const zone = this.zones.find((z) => z.index === currentZoneId);
       if (zone) {
         await this.setCapabilityValue('active_zone', zone.name);
       } else {
         await this.setCapabilityValue('active_zone', 'Unknown');
       }
 
-      const duration = this.rainbirdService.currentZoneRemainingDuration;
+      const duration = this.rainbirdService?.remainingDuration(currentZoneId) ?? 0;
 
       if (duration) {
         const endDate = new Date(Date.now() + 1000 * duration);
@@ -56,15 +69,24 @@ class RainbirdDevice extends Homey.Device {
 
   async instantiateController() {
     this.zones = this.getSetting('zones');
+    this.log('Getting configured zones', this.zones);
+
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const serviceType = await import('rainbird/dist/RainBird/RainBirdService.js');
+    this.log('Imported RainBirdService');
+
+    // Your code that uses RainBirdService goes here
+    const { RainBirdService } = serviceType;
 
     this.rainbirdService = new RainBirdService({
       address: this.getSetting('host'),
       password: this.getSetting('password'),
-      log: this,
       syncTime: true,
       showRequestResponse: this.getSetting('debug') ?? false,
       refreshRate: 30,
     });
+
+    this.log('RainbirdService created');
 
     const metadata = await this.rainbirdService?.init();
     this.log('Metadata', metadata);
@@ -137,15 +159,20 @@ class RainbirdDevice extends Homey.Device {
     newSettings,
     changedKeys,
   }: {
-    oldSettings: { [key: string]: boolean | string | number | undefined | null };
+    oldSettings: {
+      [key: string]: boolean | string | number | undefined | null
+    };
     newSettings: { [key: string]: boolean | string | number | undefined | null };
     changedKeys: string[];
   }): Promise<string | void> {
     this.log('RainbirdDevice settings where changed');
 
-    this.rainbirdService?.deactivateAllZones();
-    await this.rainbirdService?.stopIrrigation();
+    if (this.timeoutId) {
+      this.homey.clearTimeout(this.timeoutId);
 
+      this.rainbirdService?.deactivateAllZones();
+      await this.rainbirdService?.stopIrrigation();
+    }
     await this.instantiateController();
   }
 

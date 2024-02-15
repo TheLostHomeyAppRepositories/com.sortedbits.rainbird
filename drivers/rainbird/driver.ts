@@ -1,7 +1,7 @@
 import Homey from 'homey';
 import { PairSession } from 'homey/lib/Driver';
-import { RainBirdService } from '../../RainBird/RainBirdService';
-import { Zone } from './zone';
+
+import { Zone } from './zone.js';
 
 interface PairResult {
   success: boolean,
@@ -30,29 +30,36 @@ class MyDriver extends Homey.Driver {
   }
 
   async connect(data: PairData): Promise<PairResult> {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const serviceType = await import('rainbird/dist/RainBird/RainBirdService.js');
+    // Your code that uses RainBirdService goes here
+    const { RainBirdService } = serviceType;
+
     const service = new RainBirdService({
       address: data.host,
       password: data.password,
-      log: this,
       syncTime: false,
       showRequestResponse: true,
       refreshRate: 0,
     });
 
+    const metadata = await service.init();
+
+    /*
     const { client } = service;
 
     const model = await client.getModelAndVersion(false);
     const zones = await client.getAvailableZones(false);
-
-    if (model === undefined || zones === undefined) {
+    */
+    if (metadata.model === undefined || metadata.zones === undefined) {
       return {
         success: false,
       };
     }
     return {
       success: true,
-      zones: zones.zones,
-      model: model.modelName,
+      zones: metadata.zones,
+      model: metadata.model,
     };
   }
 
