@@ -4,12 +4,14 @@ import { RainBirdService } from '../../RainBird/RainBirdService';
 import { Zone } from './zone';
 
 class RainbirdDevice extends Homey.Device {
+
   rainbirdService: RainBirdService | undefined;
   zones: Zone[] = [];
   endTime: Date | undefined = undefined;
   cancelLoop: boolean = true;
   isActiveCard!: Homey.FlowCardTriggerDevice;
   enableQueueing: boolean = false;
+  timeoutId: NodeJS.Timeout | undefined;
 
   async getCurrentStatus(initial: boolean = false) {
     const isInUse = this.rainbirdService?.isInUse() ?? false;
@@ -21,14 +23,14 @@ class RainbirdDevice extends Homey.Device {
       await trigger.trigger(this);
     }
 
-    this.setCapabilityValue("is_active", isInUse);
+    await this.setCapabilityValue('is_active', isInUse);
 
     if (this.rainbirdService?.currentZoneId) {
-      const zone = this.zones.find(z => z.index === this.rainbirdService?.currentZoneId);
+      const zone = this.zones.find((z) => z.index === this.rainbirdService?.currentZoneId);
       if (zone) {
-        this.setCapabilityValue('active_zone', zone.name);
+        await this.setCapabilityValue('active_zone', zone.name);
       } else {
-        this.setCapabilityValue('active_zone', 'Unknown');
+        await this.setCapabilityValue('active_zone', 'Unknown');
       }
 
       const duration = this.rainbirdService.currentZoneRemainingDuration;
@@ -38,17 +40,17 @@ class RainbirdDevice extends Homey.Device {
         this.endTime = endDate;
         if (this.cancelLoop) {
           this.cancelLoop = false;
-          this.updateTime();
+          await this.updateTime();
         }
       } else {
-        this.setCapabilityValue('zone_time_left', '-');
+        await this.setCapabilityValue('zone_time_left', '-');
         this.cancelLoop = true;
       }
     } else {
       this.endTime = undefined;
       this.cancelLoop = true;
-      this.setCapabilityValue('active_zone', 'None');
-      this.setCapabilityValue('zone_time_left', '-');
+      await this.setCapabilityValue('active_zone', 'None');
+      await this.setCapabilityValue('zone_time_left', '-');
     }
   }
 
@@ -61,16 +63,16 @@ class RainbirdDevice extends Homey.Device {
       log: this,
       syncTime: true,
       showRequestResponse: this.getSetting('debug') ?? false,
-      refreshRate: 30
+      refreshRate: 30,
     });
 
     const metadata = await this.rainbirdService?.init();
     this.log('Metadata', metadata);
 
-    this.getCurrentStatus(true);
+    await this.getCurrentStatus(true);
 
     this.rainbirdService.on('status', () => {
-      this.getCurrentStatus();
+      this.getCurrentStatus().catch((e) => this.error(e));
     });
   }
 
@@ -80,7 +82,7 @@ class RainbirdDevice extends Homey.Device {
   async onInit() {
     this.log('RainbirdDevice has been initialized');
 
-    this.isActiveCard = this.homey.flow.getDeviceTriggerCard("turns_on");
+    this.isActiveCard = this.homey.flow.getDeviceTriggerCard('turns_on');
 
     const zoneWithTime = this.homey.flow.getActionCard('start_zone_X_minutes');
     this.registerZoneAutocomplete(zoneWithTime);
@@ -110,8 +112,7 @@ class RainbirdDevice extends Homey.Device {
     const rainbirdIsActive = this.homey.flow.getConditionCard('rainbird_is_active');
     rainbirdIsActive.registerRunListener(async (args) => {
       return this.rainbirdService?.isInUse();
-    })
-    
+    });
 
     await this.instantiateController();
   }
@@ -140,12 +141,12 @@ class RainbirdDevice extends Homey.Device {
     newSettings: { [key: string]: boolean | string | number | undefined | null };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log("RainbirdDevice settings where changed");
+    this.log('RainbirdDevice settings where changed');
 
     this.rainbirdService?.deactivateAllZones();
-    this.rainbirdService?.stopIrrigation();
+    await this.rainbirdService?.stopIrrigation();
 
-    this.instantiateController();
+    await this.instantiateController();
   }
 
   /**
@@ -162,57 +163,62 @@ class RainbirdDevice extends Homey.Device {
    */
   async onDeleted() {
     this.log('RainbirdDevice has been deleted');
-    this.rainbirdService?.deactivateAllZones();
-    this.rainbirdService?.stopIrrigation();
+
     this.cancelLoop = true;
+    if (this.timeoutId) {
+      this.homey.clearTimeout(this.timeoutId);
+    }
+
+    this.rainbirdService?.deactivateAllZones();
+    await this.rainbirdService?.stopIrrigation();
   }
 
-  private updateTime() {
+  updateTime = async () => {
     const now = Date.now();
 
     if (this.endTime) {
       if (now > this.endTime.getTime()) {
-        this.setCapabilityValue('zone_time_left', '-');
+        await this.setCapabilityValue('zone_time_left', '-');
         this.cancelLoop = true;
       } else {
         const remaining = (this.endTime.getTime() - now) / 1000;
-        this.setCapabilityValue('zone_time_left', this.formatTime(remaining));
+        await this.setCapabilityValue('zone_time_left', this.formatTime(remaining));
       }
     } else {
-      this.setCapabilityValue('zone_time_left', '-');
+      await this.setCapabilityValue('zone_time_left', '-');
     }
 
     if (!this.cancelLoop) {
-      setTimeout(() => this.updateTime(), 1000 - (now % 1000));
+      this.timeoutId = await this.homey.setTimeout(this.updateTime.bind(this), 1000 - (now % 1000));
     }
   }
 
   private registerZoneAutocomplete(card: Homey.FlowCardAction) {
     card.registerArgumentAutocompleteListener(
-      "zone",
+      'zone',
       async (query, args): Promise<ArgumentAutocompleteResults> => {
-        const filtered = this.zones.filter(z => z.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+        const filtered = this.zones.filter((z) => z.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
 
-        return filtered.map(z => {
+        return filtered.map((z) => {
           return {
             name: z.name,
-            index: z.index
-          }
-        })
-      }
-    )
+            index: z.index,
+          };
+        });
+      },
+    );
   }
 
   private registerRunListenerStartZoneWithTime(card: Homey.FlowCardAction) {
     card.registerRunListener(async (args) => {
-      const zone: Zone | undefined = args.zone;
-      const minutes: number | undefined = args.minutes;
+      const { zone } = args;
+      const { minutes } = args;
 
       if (zone && minutes) {
         if (!this.enableQueueing) {
-          this.log(`No queueing, disabling active zones before starting new one`);
+          this.log('No queueing, disabling active zones before starting new one');
           this.rainbirdService?.deactivateAllZones();
-          this.rainbirdService?.stopIrrigation();
+          await this.rainbirdService?.stopIrrigation();
           this.log(`Starting zone ${zone.name} (${zone.index}) for ${minutes} minutes`);
         } else {
           this.log(`Queueing zone ${zone.name} (${zone.index}) for ${minutes} minutes`);
@@ -225,15 +231,15 @@ class RainbirdDevice extends Homey.Device {
 
   private registerRunListenerStartZone(card: Homey.FlowCardAction) {
     card.registerRunListener(async (args) => {
-      const zone: Zone | undefined = args.zone;
+      const { zone } = args;
 
       const minutes = this.getSetting('defaultIrrigationTime');
 
       if (zone) {
         if (!this.enableQueueing) {
-          this.log(`No queueing, disabling active zones before starting new one`);
+          this.log('No queueing, disabling active zones before starting new one');
           this.rainbirdService?.deactivateAllZones();
-          this.rainbirdService?.stopIrrigation();
+          await this.rainbirdService?.stopIrrigation();
           this.log(`Starting zone ${zone.name} (${zone.index}) for ${minutes} minutes`);
         } else {
           this.log(`Queueing zone ${zone.name} (${zone.index}) for ${minutes} minutes`);
@@ -246,11 +252,12 @@ class RainbirdDevice extends Homey.Device {
 
   private registerRunListenerStopZone(card: Homey.FlowCardAction) {
     card.registerRunListener(async (args) => {
-      const zone: Zone | undefined = args.zone;
+      const { zone } = args;
 
       if (zone) {
         this.log(`Stopping zone ${zone.name}`);
-        this.rainbirdService?.deactivateZone(zone.index);
+
+        this.rainbirdService?.deactivateZone(zone.index).catch((e) => this.error(e));
       }
     });
   }
@@ -258,8 +265,9 @@ class RainbirdDevice extends Homey.Device {
   private registerRunListenerStopIrrigation(card: Homey.FlowCardAction) {
     card.registerRunListener(async () => {
       this.rainbirdService?.deactivateAllZones();
-      this.rainbirdService?.stopIrrigation();
-    })
+
+      this.rainbirdService?.stopIrrigation().catch((e) => this.error(e));
+    });
   }
 
   private formatTime(seconds?: number): string {
@@ -269,6 +277,7 @@ class RainbirdDevice extends Homey.Device {
     const date = new Date(seconds * 1000);
     return date.toISOString().substring(11, 19);
   }
+
 }
 
 module.exports = RainbirdDevice;

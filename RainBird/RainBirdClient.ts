@@ -1,3 +1,4 @@
+import { SimpleClass } from 'homey';
 import crypto = require('crypto');
 import encoder = require('text-encoder');
 
@@ -43,7 +44,6 @@ import { AdvanceZoneRequest } from './requests/AdvanceZoneRequest';
 import { IrrigationDelaySetRequest } from './requests/IrrigationDelaySetRequest';
 import { IrrigationDelayGetRequest } from './requests/IrrigationDelayGetRequest';
 import { IrrigationDelayGetResponse } from './responses/IrrigationDelayGetResponse';
-import { SimpleClass } from 'homey';
 
 type RainBirdRequest = {
   type: Request,
@@ -52,6 +52,7 @@ type RainBirdRequest = {
 }
 
 export class RainBirdClient {
+
   private readonly RETRY_DELAY = 60;
 
   private requestQueue = cq()
@@ -62,13 +63,14 @@ export class RainBirdClient {
     private readonly address: string,
     private readonly password: string,
     private readonly log: SimpleClass,
-    private readonly showRequestResponse: boolean) {
+    private readonly showRequestResponse: boolean,
+  ) {
   }
 
   public async getModelAndVersion(retry: boolean = true): Promise<ModelAndVersionResponse> {
     const request: RainBirdRequest = {
       type: new ModelAndVersionRequest(),
-      retry: retry,
+      retry,
       postDelay: 0,
     };
     return await this.requestQueue(request) as ModelAndVersionResponse;
@@ -77,7 +79,7 @@ export class RainBirdClient {
   public async getAvailableZones(retry: boolean = true): Promise<AvailableZonesResponse> {
     const request: RainBirdRequest = {
       type: new AvailableZonesRequest(),
-      retry: retry,
+      retry,
       postDelay: 0,
     };
     return await this.requestQueue(request) as AvailableZonesResponse;
@@ -293,7 +295,8 @@ export class RainBirdClient {
     }
     if (decryptedResponse.error) {
       this.log.error(
-        `Received error from Rainbird controller ${decryptedResponse.error.code}: ${decryptedResponse.error.message}`);
+        `Received error from Rainbird controller ${decryptedResponse.error.code}: ${decryptedResponse.error.message}`,
+      );
       return;
     }
     if (!decryptedResponse.result) {
@@ -302,7 +305,7 @@ export class RainBirdClient {
     }
     const data = Buffer.from(decryptedResponse.result.data, 'hex');
 
-    let response: Response | undefined = undefined;
+    let response: Response | undefined;
     switch (data[0]) {
       case 0x00:
         response = new NotAcknowledgedResponse(data);
@@ -357,33 +360,33 @@ export class RainBirdClient {
   private encrypt(request: Request): Buffer {
     const formattedRequest = this.formatRequest(request);
     const
-      passwordHash = crypto.createHash('sha256').update(this.toBytes(this.password)).digest(),
-      randomBytes = crypto.randomBytes(16),
-      packedRequest = this.toBytes(this.addPadding(`${formattedRequest}\x00\x10`)),
-      hashedRequest = crypto.createHash('sha256').update(this.toBytes(formattedRequest)).digest(),
-      easEncryptor = new aesjs.ModeOfOperation.cbc(passwordHash, randomBytes),
-      encryptedRequest = Buffer.from(easEncryptor.encrypt(packedRequest));
+      passwordHash = crypto.createHash('sha256').update(this.toBytes(this.password)).digest();
+    const randomBytes = crypto.randomBytes(16);
+    const packedRequest = this.toBytes(this.addPadding(`${formattedRequest}\x00\x10`));
+    const hashedRequest = crypto.createHash('sha256').update(this.toBytes(formattedRequest)).digest();
+    const easEncryptor = new aesjs.ModeOfOperation.cbc(passwordHash, randomBytes);
+    const encryptedRequest = Buffer.from(easEncryptor.encrypt(packedRequest));
     return Buffer.concat([hashedRequest, randomBytes, encryptedRequest]);
   }
 
   private decrypt(data: Buffer): string {
     const
-      passwordHash = crypto.createHash('sha256').update(this.toBytes(this.password)).digest().slice(0, 32),
-      randomBytes = data.slice(32, 48),
-      encryptedBody = data.slice(48, data.length),
-      aesDecryptor = new aesjs.ModeOfOperation.cbc(passwordHash, randomBytes);
+      passwordHash = crypto.createHash('sha256').update(this.toBytes(this.password)).digest().slice(0, 32);
+    const randomBytes = data.slice(32, 48);
+    const encryptedBody = data.slice(48, data.length);
+    const aesDecryptor = new aesjs.ModeOfOperation.cbc(passwordHash, randomBytes);
     return new encoder.TextDecoder().decode(aesDecryptor.decrypt(encryptedBody));
   }
 
   private formatRequest(request: Request) {
     const data: Buffer = request.toBuffer();
     return superStringify({
-      'id': 9,
-      'jsonrpc': '2.0',
-      'method': 'tunnelSip',
-      'params': {
-        'data': data.toString('hex'),
-        'length': data.length,
+      id: 9,
+      jsonrpc: '2.0',
+      method: 'tunnelSip',
+      params: {
+        data: data.toString('hex'),
+        length: data.length,
       },
     });
   }
@@ -395,8 +398,8 @@ export class RainBirdClient {
         'Accept-Language': 'en',
         'Accept-Encoding': 'gzip, deflate',
         'User-Agent': 'RainBird/2.0 CFNetwork/811.5.4 Darwin/16.7.0',
-        'Accept': '*/*',
-        'Connection': 'keep-alive',
+        Accept: '*/*',
+        Connection: 'keep-alive',
         'Content-Type': 'application/octet-stream',
       },
     };
@@ -421,4 +424,5 @@ export class RainBirdClient {
       }, sec * 1000);
     });
   }
+
 }
