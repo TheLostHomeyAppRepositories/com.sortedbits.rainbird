@@ -8,7 +8,7 @@
     "local"
   ],
   "name": {
-    "en": "Rainbird"
+    "en": "Rain Bird"
   },
   "description": {
     "en": "Control the rain"
@@ -32,10 +32,11 @@
       {
         "id": "turns_on",
         "title": {
-          "en": "Rainbird starts irrigation"
+          "en": "Starts irrigation",
+          "nl": "Irrigatie start"
         },
         "hint": {
-          "en": "When the rainbird turns on any zone"
+          "en": "When the Rain Bird turns on any zone"
         },
         "args": [
           {
@@ -48,10 +49,11 @@
       {
         "id": "turns_off",
         "title": {
-          "en": "Rainbird stops irrigation"
+          "en": "Stops irrigation",
+          "nl": "Irrigatie stopt"
         },
         "hint": {
-          "en": "When the rainbird has no active zones"
+          "en": "When the Rain Bird has no active zones"
         },
         "args": [
           {
@@ -65,7 +67,10 @@
     "conditions": [
       {
         "id": "rainbird_is_active",
-        "title": "Rainbird !{{is|isn't}} active",
+        "title": {
+          "en": "!{{Is|Isn't}} active",
+          "nl": "!{{Is|Is niet}} actief"
+        },
         "args": [
           {
             "type": "device",
@@ -77,10 +82,12 @@
       {
         "id": "zone_is_active",
         "title": {
-          "en": "Zone !{{is|isn't}} active"
+          "en": "Zone !{{is|isn't}} active",
+          "nl": "Zone !{{is|is niet}} actief"
         },
         "titleFormatted": {
-          "en": "Zone [[zone]] !{{is|isn't}} active"
+          "en": "Zone [[zone]] !{{is|isn't}} active",
+          "nl": "Zone [[zone]] !{{is|is niet}} actief"
         },
         "args": [
           {
@@ -122,7 +129,8 @@
               "en": "Zone"
             },
             "placeholder": {
-              "en": "Irrigation zone"
+              "en": "Irrigation zone",
+              "nl": "Irrigatie zone"
             }
           }
         ]
@@ -147,7 +155,8 @@
               "en": "Zone"
             },
             "placeholder": {
-              "en": "Irrigation zone"
+              "en": "Irrigation zone",
+              "nl": "Irrigatie zone"
             }
           },
           {
@@ -158,7 +167,8 @@
               "nl": "Tijd"
             },
             "placeholder": {
-              "en": "In minutes"
+              "en": "In minutes",
+              "nl": "In minuten"
             },
             "min": 1,
             "max": 100
