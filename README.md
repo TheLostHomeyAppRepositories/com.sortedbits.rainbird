@@ -1,3 +1,3 @@
-# Rainbird
+# Rain Bird
 
-Adds support for Rainbird devices
+Adds support for Rain Bird devices
