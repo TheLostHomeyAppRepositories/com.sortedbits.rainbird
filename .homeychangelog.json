@@ -10,5 +10,8 @@
   },
   "1.0.3": {
     "en": "Update metadata"
+  },
+  "1.1.0": {
+    "en": "Ability to rename zones through the repair option"
   }
 }
