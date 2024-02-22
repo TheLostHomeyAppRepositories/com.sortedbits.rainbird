@@ -40,5 +40,10 @@
       "id": "add_devices",
       "template": "add_devices"
     }
+  ],
+  "repair": [
+    {
+      "id": "zone_names"
+    }
   ]
 }

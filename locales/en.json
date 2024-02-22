@@ -16,5 +16,8 @@
         "title": "Zone definitions",
         "description": "Please specify names for your zones here. Leaving them empty will disable them in the interface.",
         "zone": "Zone"
+    },
+    "zone_names": {
+        "save": "Save"
     }
 }

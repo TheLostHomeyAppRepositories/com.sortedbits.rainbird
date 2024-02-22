@@ -91,6 +91,22 @@ class RainbirdDevice extends Homey.Device {
     const metadata = await this.rainbirdService?.init();
     this.log('Metadata', metadata);
 
+    const settings = await this.getSettings();
+
+    if (settings.enableQueueing === 'on') {
+      await this.setSettings({ enableQueueing: false });
+    }
+
+    if (typeof settings.defaultIrrigationTime === 'string') {
+      await this.setSettings({ defaultIrrigationTime: 60 });
+    }
+
+    if (!settings.zonesAvailable && metadata.zones) {
+      await this.setSettings({
+        zonesAvailable: metadata.zones.length,
+      });
+    }
+
     await this.getCurrentStatus(true);
 
     this.rainbirdService.on('status', () => {
@@ -169,10 +185,11 @@ class RainbirdDevice extends Homey.Device {
 
     if (this.timeoutId) {
       this.homey.clearTimeout(this.timeoutId);
-
-      this.rainbirdService?.deactivateAllZones();
-      await this.rainbirdService?.stopIrrigation();
     }
+
+    this.rainbirdService?.deactivateAllZones();
+
+    await this.rainbirdService?.stopIrrigation();
     await this.instantiateController();
   }
 
@@ -224,7 +241,8 @@ class RainbirdDevice extends Homey.Device {
     card.registerArgumentAutocompleteListener(
       'zone',
       async (query, args): Promise<ArgumentAutocompleteResults> => {
-        const filtered = this.zones.filter((z) => z.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
+        const { zones } = this.getSettings();
+        const filtered = zones.filter((z) => z.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
 
         return filtered.map((z) => {
           return {

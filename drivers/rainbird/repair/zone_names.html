@@ -1,0 +1,110 @@
+<script type="application/javascript">
+    var zoneNames = {};
+
+    Homey.showLoadingOverlay();
+
+    function enableZone(zoneIndex, data) {
+        const element = document.getElementById('zone' + zoneIndex + '-group');
+        if (element) {
+            const input = document.getElementById('zone' + zoneIndex);
+
+            input.addEventListener("input", function () {
+                console.log('input', zoneIndex);
+                zoneNames[zoneIndex] = this.value;
+            });
+
+            if (data.zones) {
+                const zone = data.zones.find(zone => zone.index === zoneIndex);
+                if (zone && zone.name) {
+                    zoneNames[zoneIndex] = zone.name;
+                    input.value = zone.name;
+                }
+            }
+
+            element.style = '';
+        }
+    }
+
+    Homey.on("metadata", function (data) {
+        if (data.zonesAvailable) {
+            for (var zoneIndex = 1; zoneIndex <= data.zonesAvailable; zoneIndex++) {
+                enableZone(zoneIndex, data);
+            }
+
+            Homey.hideLoadingOverlay();
+        }
+        return true;
+    });
+
+    function submitForm() {
+        Homey.showLoadingOverlay();
+
+        Homey.emit("zone_name_update", zoneNames).then(function (result) {
+            console.log(result);
+            Homey.hideLoadingOverlay()
+
+            if (result.success !== true) {
+                Homey.alert(`Failed to update zone names`);
+            } else {
+                Homey.done();
+            }
+        });
+
+    }
+</script>
+
+<style>
+    .homey-form {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+</style>
+
+<form class="homey-form">
+    <fieldset class="homey-form-fieldset">
+        <legend class="homey-form-legend" data-i18n="zones.title"></legend>
+
+        <p class="homey-subtitle" data-i18n="zones.description" />
+
+        <div class="homey-form-group" id="zone1-group" style="display: none">
+            <label class="homey-form-label" for="zone1"><span data-i18n="zones.zone"></span> 1</label>
+            <input class="homey-form-input" id="zone1" type="text" value="" data-index="1" />
+        </div>
+        <div class="homey-form-group" id="zone2-group" style="display: none">
+            <label class="homey-form-label" for="zone2"><span data-i18n="zones.zone"></span> 2</label>
+            <input class="homey-form-input" id="zone2" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone3-group" style="display: none">
+            <label class="homey-form-label" for="zone3"><span data-i18n="zones.zone"></span> 3</label>
+            <input class="homey-form-input" id="zone3" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone4-group" style="display: none">
+            <label class="homey-form-label" for="zone4"><span data-i18n="zones.zone"></span> 4</label>
+            <input class="homey-form-input" id="zone4" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone5-group" style="display: none">
+            <label class="homey-form-label" for="zone5"><span data-i18n="zones.zone"></span> 5</label>
+            <input class="homey-form-input" id="zone5" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone6-group" style="display: none">
+            <label class="homey-form-label" for="zone6"><span data-i18n="zones.zone"></span> 6</label>
+            <input class="homey-form-input" id="zone6" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone7-group" style="display: none">
+            <label class="homey-form-label" for="zone7">
+                <p data-i18n="zones.zone"></p> 7
+            </label>
+            <input class="homey-form-input" id="zone7" type="text" value="" />
+        </div>
+        <div class="homey-form-group" id="zone8-group" style="display: none">
+            <label class="homey-form-label" for="zone8">
+                <p data-i18n="zones.zone"></p> 8
+            </label>
+            <input class="homey-form-input" id="zone8" type="text" value="" />
+        </div>
+    </fieldset>
+    <button id="submit-button" type="button" onclick="submitForm()" class="homey-button-primary-full"
+        data-i18n="zone_names.save" />
+</form>

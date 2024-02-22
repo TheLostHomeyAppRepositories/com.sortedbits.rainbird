@@ -25,14 +25,13 @@ class MyDriver extends Homey.Driver {
   /**
    * onInit is called when the driver is initialized.
    */
-  async onInit() {
+  onInit = async () => {
     this.log('Rainbird has been initialized');
   }
 
-  async connect(data: PairData): Promise<PairResult> {
+  connect = async (data: PairData): Promise<PairResult> => {
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const serviceType = await import('rainbird/dist/RainBird/RainBirdService.js');
-    // Your code that uses RainBirdService goes here
     const { RainBirdService } = serviceType;
 
     const service = new RainBirdService({
@@ -45,17 +44,12 @@ class MyDriver extends Homey.Driver {
 
     const metadata = await service.init();
 
-    /*
-    const { client } = service;
-
-    const model = await client.getModelAndVersion(false);
-    const zones = await client.getAvailableZones(false);
-    */
     if (metadata.model === undefined || metadata.zones === undefined) {
       return {
         success: false,
       };
     }
+
     return {
       success: true,
       zones: metadata.zones,
@@ -63,7 +57,20 @@ class MyDriver extends Homey.Driver {
     };
   }
 
-  async onPair(session: PairSession) {
+  createZonesFromData = (data: Record<number, string>): Zone[] => {
+    const result: Zone[] = [];
+    for (const key of Object.keys(data)) {
+      if (this.zoneNames[key] !== undefined && this.zoneNames[key] !== '') {
+        result.push({
+          index: Number(key),
+          name: this.zoneNames[key],
+        });
+      }
+    }
+    return result;
+  };
+
+  onPair = async (session: PairSession) => {
     session.setHandler('form_complete', async (data) => {
       if (data.host && data.password) {
         this.pairData = data as PairData;
@@ -87,18 +94,9 @@ class MyDriver extends Homey.Driver {
 
     session.setHandler('list_devices', async () => {
       if (this.pairData && this.pairResult && this.pairResult.success) {
-        const createZones: Zone[] = [];
+        const zones = this.createZonesFromData(this.zoneNames);
 
-        for (const key of Object.keys(this.zoneNames)) {
-          if (this.zoneNames[key] !== undefined && this.zoneNames[key] !== '') {
-            createZones.push({
-              index: Number(key),
-              name: this.zoneNames[key],
-            });
-          }
-        }
-
-        this.log(createZones);
+        this.log('pairData', JSON.stringify(this.pairData));
 
         return [
           {
@@ -109,9 +107,9 @@ class MyDriver extends Homey.Driver {
             settings: {
               host: this.pairData.host,
               password: this.pairData.password,
-              defaultIrrigationTime: this.pairData.defaultIrrigationTime,
+              defaultIrrigationTime: Number(this.pairData.defaultIrrigationTime),
               enableQueueing: this.pairData.enableQueueing,
-              zones: createZones,
+              zones,
             },
           },
         ];
@@ -122,6 +120,38 @@ class MyDriver extends Homey.Driver {
     session.setHandler('showView', async (view) => {
       if (view === 'zones') {
         await session.emit('pairing_data', this.pairResult);
+      }
+    });
+  }
+
+  onRepair = async (session: PairSession, device: Homey.Device) => {
+    session.setHandler('showView', async (view) => {
+      if (view === 'zone_names') {
+        const { zones, zonesAvailable } = await device.getSettings();
+        await session.emit('metadata', {
+          zones,
+          zonesAvailable,
+        });
+      }
+    });
+
+    session.setHandler('zone_name_update', async (data) => {
+      this.zoneNames = data;
+
+      try {
+        const zones = this.createZonesFromData(this.zoneNames);
+
+        await device.setSettings({
+          zones,
+        });
+
+        return {
+          success: true,
+        };
+      } catch (error) {
+        return {
+          success: false,
+        };
       }
     });
   }
