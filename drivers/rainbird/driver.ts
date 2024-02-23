@@ -1,7 +1,8 @@
 import Homey from 'homey';
 import { PairSession } from 'homey/lib/Driver';
 
-import { Zone } from './zone.js';
+import { Zone } from './models/zone';
+import { FormResult } from './models/form-result';
 
 interface PairResult {
   success: boolean,
@@ -16,7 +17,7 @@ interface PairData {
   defaultIrrigationTime: number
 }
 
-class MyDriver extends Homey.Driver {
+class RainBirdDriver extends Homey.Driver {
 
   pairData: PairData | undefined;
   pairResult: PairResult | undefined;
@@ -127,35 +128,47 @@ class MyDriver extends Homey.Driver {
   onRepair = async (session: PairSession, device: Homey.Device) => {
     session.setHandler('showView', async (view) => {
       if (view === 'zone_names') {
-        const { zones, zonesAvailable } = await device.getSettings();
-        await session.emit('metadata', {
-          zones,
-          zonesAvailable,
-        });
+        await this.emitZoneMetadata(session, device);
       }
     });
 
     session.setHandler('zone_name_update', async (data) => {
-      this.zoneNames = data;
-
-      try {
-        const zones = this.createZonesFromData(this.zoneNames);
-
-        await device.setSettings({
-          zones,
-        });
-
-        return {
-          success: true,
-        };
-      } catch (error) {
-        return {
-          success: false,
-        };
-      }
+      return this.zoneNameUpdate(data, device);
     });
+  }
+
+  emitZoneMetadata = async (session: PairSession, device: Homey.Device) => {
+    const { zones, zonesAvailable } = await device.getSettings();
+    await session.emit('metadata', {
+      zones,
+      zonesAvailable,
+    });
+  };
+
+  zoneNameUpdate = async (data: Record<number, string>, device: Homey.Device): Promise<FormResult> => {
+    this.zoneNames = data;
+
+    try {
+      const zones = this.createZonesFromData(this.zoneNames);
+
+      await device.setSettings({
+        zones,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      return {
+        success: false,
+      };
+    }
+  }
+
+  testMethod = (): string => {
+    return 'test';
   }
 
 }
 
-module.exports = MyDriver;
+module.exports = RainBirdDriver;

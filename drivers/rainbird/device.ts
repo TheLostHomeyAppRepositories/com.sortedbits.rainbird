@@ -1,7 +1,7 @@
 import Homey from 'homey';
 import { ArgumentAutocompleteResults } from 'homey/lib/FlowCard';
 
-import { Zone } from './zone';
+import { Zone } from './models/zone';
 
 class RainbirdDevice extends Homey.Device {
 
@@ -68,7 +68,17 @@ class RainbirdDevice extends Homey.Device {
   }
 
   async instantiateController() {
-    this.zones = this.getSetting('zones');
+    const {
+      zones,
+      host,
+      password,
+      debug,
+      enableQueueing,
+      defaultIrrigationTime,
+      zonesAvailable,
+    } = this.getSettings();
+
+    this.zones = zones;
     this.log('Getting configured zones', this.zones);
 
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
@@ -79,29 +89,26 @@ class RainbirdDevice extends Homey.Device {
     const { RainBirdService } = serviceType;
 
     this.rainbirdService = new RainBirdService({
-      address: this.getSetting('host'),
-      password: this.getSetting('password'),
+      address: host,
+      password,
       syncTime: true,
-      showRequestResponse: this.getSetting('debug') ?? false,
+      showRequestResponse: debug ?? false,
       refreshRate: 30,
     });
 
     this.log('RainbirdService created');
 
     const metadata = await this.rainbirdService?.init();
-    this.log('Metadata', metadata);
 
-    const settings = await this.getSettings();
-
-    if (settings.enableQueueing === 'on') {
+    if (enableQueueing === 'on') {
       await this.setSettings({ enableQueueing: false });
     }
 
-    if (typeof settings.defaultIrrigationTime === 'string') {
+    if (typeof defaultIrrigationTime === 'string') {
       await this.setSettings({ defaultIrrigationTime: 60 });
     }
 
-    if (!settings.zonesAvailable && metadata.zones) {
+    if (!zonesAvailable && metadata.zones) {
       await this.setSettings({
         zonesAvailable: metadata.zones.length,
       });
