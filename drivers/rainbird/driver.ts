@@ -28,6 +28,37 @@ class RainBirdDriver extends Homey.Driver {
    */
   onInit = async () => {
     this.log('Rainbird has been initialized');
+
+    this.homey.flow.getActionCard('start_zone_X_minutes').registerRunListener(async (args) => {
+      this.log('start_zone_X_minutes');
+      await args.device.startZoneWithTime(args);
+    });
+
+    this.homey.flow.getActionCard('start_zone').registerRunListener(async (args) => {
+      this.log('start_zone');
+      await args.device.startZone(args);
+    });
+
+    this.homey.flow.getActionCard('stop_zone').registerRunListener(async (args) => {
+      this.log('stop_zone');
+      await args.device.stopZone(args);
+    });
+
+    this.homey.flow.getActionCard('stop_irrigation').registerRunListener(async (args) => {
+      this.log('stop_irrigation');
+      await args.device.stopIrrigation(args);
+    });
+
+    this.homey.flow.getConditionCard('zone_is_active').registerRunListener(async (args) => {
+      this.log('zone_is_active');
+      return args.device.zoneIsActive(args);
+    });
+
+    this.homey.flow.getConditionCard('rainbird_is_active').registerRunListener(async (args) => {
+      return args.device.rainbirdIsActive();
+    });
+
+
   }
 
   connect = async (data: PairData): Promise<PairResult> => {
