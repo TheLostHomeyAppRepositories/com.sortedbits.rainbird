@@ -13,5 +13,8 @@
   },
   "1.1.0": {
     "en": "Ability to rename zones through the repair option"
+  },
+  "1.1.1": {
+    "en": "Fix zones from wrong controller showing up"
   }
 }
