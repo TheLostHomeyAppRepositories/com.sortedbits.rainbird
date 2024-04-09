@@ -6,10 +6,12 @@ This app should be compatible with any controller that supports the Rain Bird LN
 - ESP-TM2
 - ESP-RZXe
 - ESP-ME3
+- RC2
 
 Currently this app has been tested with the following Rain Bird models:
 
 - Rain Bird ESP-RZXe6i indoor WIFI
+- Rain Bird RC2
 
 If your model isn't listed here, but the integration works, please let me know, so I can update this list.
 
