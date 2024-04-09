@@ -10,12 +10,12 @@
             host: host,
             password: password,
             enableQueueing: enableQueueing,
-            defaultIrrigationTime: defaultIrrigationTime
+            defaultIrrigationTime: defaultIrrigationTime,
         };
 
         Homey.showLoadingOverlay();
-        Homey.emit("form_complete", data).then(function (result) {
-            Homey.hideLoadingOverlay()
+        Homey.emit('form_complete', data).then(function (result) {
+            Homey.hideLoadingOverlay();
 
             if (result.success !== true) {
                 Homey.alert(`Failed to connect, please check the details in the form`);
@@ -39,7 +39,7 @@
 
         <div class="homey-form-group">
             <label class="homey-form-label" for="host" data-i18n="login.host"></label>
-            <input class="homey-form-input" id="host" type="text" value="" />
+            <input class="homey-form-input" id="host" type="text" value="rainbird.local" />
         </div>
         <div class="homey-form-group">
             <label class="homey-form-label" for="password" data-i18n="login.password"></label>
@@ -47,8 +47,7 @@
         </div>
 
         <div class="homey-form-group">
-            <label class="homey-form-label" for="defaultIrrigationTime"
-                data-i18n="settings.defaultIrrigationTime"></label>
+            <label class="homey-form-label" for="defaultIrrigationTime" data-i18n="settings.defaultIrrigationTime"></label>
             <input class="homey-form-input" id="defaultIrrigationTime" type="number" value="60" />
         </div>
         <div class="homey-form-group">
@@ -57,6 +56,5 @@
         </div>
     </fieldset>
 
-    <button id="submit-button" type="button" onclick="submitForm()" class="homey-button-primary-full"
-        data-i18n="flow.continue" />
+    <button id="submit-button" type="button" onclick="submitForm()" class="homey-button-primary-full" data-i18n="flow.continue" />
 </form>

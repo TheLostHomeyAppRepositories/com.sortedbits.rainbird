@@ -8,6 +8,8 @@
     "import/no-unresolved": "off",
     "node/no-missing-import": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "camelcase": "off",
+    "quotes": [2, "single", { "avoidEscape": true }]
   }
 }

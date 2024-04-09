@@ -1,49 +1,41 @@
 {
-  "name": {
-    "en": "Rain Bird"
-  },
-  "class": "other",
-  "capabilities": [
-    "active_zone",
-    "zone_time_left",
-    "is_active"
-  ],
-  "platforms": [
-    "local"
-  ],
-  "connectivity": [
-    "lan"
-  ],
-  "images": {
-    "small": "{{driverAssetsPath}}/images/small.png",
-    "large": "{{driverAssetsPath}}/images/large.png",
-    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
-  },
-  "pair": [
-    {
-      "id": "pair"
+    "name": {
+        "en": "Rain Bird"
     },
-    {
-      "id": "zones",
-      "navigation": {
-        "next": "list_devices"
-      }
+    "class": "other",
+    "capabilities": ["active_zone", "zone_time_left", "is_active"],
+    "platforms": ["local"],
+    "connectivity": ["lan"],
+    "images": {
+        "small": "{{driverAssetsPath}}/images/small.png",
+        "large": "{{driverAssetsPath}}/images/large.png",
+        "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
     },
-    {
-      "id": "list_devices",
-      "template": "list_devices",
-      "navigation": {
-        "next": "add_devices"
-      }
-    },
-    {
-      "id": "add_devices",
-      "template": "add_devices"
-    }
-  ],
-  "repair": [
-    {
-      "id": "zone_names"
-    }
-  ]
+    "pair": [
+        {
+            "id": "pair"
+        },
+        {
+            "id": "zones",
+            "navigation": {
+                "next": "list_devices"
+            }
+        },
+        {
+            "id": "list_devices",
+            "template": "list_devices",
+            "navigation": {
+                "next": "add_devices"
+            }
+        },
+        {
+            "id": "add_devices",
+            "template": "add_devices"
+        }
+    ],
+    "repair": [
+        {
+            "id": "zone_names"
+        }
+    ]
 }
