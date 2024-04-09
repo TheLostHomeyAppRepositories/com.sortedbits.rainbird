@@ -16,5 +16,8 @@
   },
   "1.1.1": {
     "en": "Fix zones from wrong controller showing up"
+  },
+  "1.2.0": {
+    "en": "Better pairing, mention RC2 support"
   }
 }
