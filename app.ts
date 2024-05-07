@@ -21,26 +21,6 @@ class MyApp extends Homey.App {
 
         const zoneIsActive = this.homey.flow.getConditionCard('zone_is_active');
         this.registerZoneAutocomplete(zoneIsActive);
-
-        await this.discoveryTest();
-    }
-
-    discoveryTest = async () => {
-        const discoveryStrategy = this.homey.discovery.getStrategy('rainbird');
-        this.log('discoveryStrategy', discoveryStrategy);
-
-        const initialDiscoveryResults = discoveryStrategy.getDiscoveryResults();
-        for (const discoveryResult of Object.values(initialDiscoveryResults)) {
-            this.handleDiscoveryResult(discoveryResult);
-        }
-
-        discoveryStrategy.on('result', (discoveryResult) => {
-            this.handleDiscoveryResult(discoveryResult);
-        });
-    };
-
-    handleDiscoveryResult(discoveryResult) {
-        this.log('Got result:', discoveryResult);
     }
 
     private registerZoneAutocomplete(card: Homey.FlowCardAction) {

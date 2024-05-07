@@ -1,8 +1,8 @@
 import Homey from 'homey';
 import { PairSession } from 'homey/lib/Driver';
 
-import { Zone } from './models/zone';
 import { FormResult } from './models/form-result';
+import { Zone } from './models/zone';
 
 interface PairResult {
     success: boolean;
@@ -104,13 +104,21 @@ class RainBirdDriver extends Homey.Driver {
             if (data.host && data.password) {
                 this.pairData = data as PairData;
 
-                this.pairResult = await this.connect(this.pairData as PairData);
+                try {
+                    this.pairResult = await this.connect(this.pairData as PairData);
 
-                if (!this.pairResult.success) {
+                    if (!this.pairResult.success) {
+                        return this.pairResult;
+                    }
+                    await session.nextView();
                     return this.pairResult;
+                } catch (error) {
+                    this.error('Error connecting to Rainbird', error);
+                    return {
+                        success: false,
+                        error,
+                    };
                 }
-                await session.nextView();
-                return this.pairResult;
             }
             return {
                 success: false,

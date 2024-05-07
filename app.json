@@ -367,15 +367,5 @@
       "uiQuickAction": true,
       "icon": "/assets/capabilities/timer.svg"
     }
-  },
-  "discovery": {
-    "rainbird": {
-      "type": "mdns-sd",
-      "mdns-sd": {
-        "name": "_http",
-        "protocol": "tcp"
-      },
-      "id": "{{txt.id}}"
-    }
   }
 }

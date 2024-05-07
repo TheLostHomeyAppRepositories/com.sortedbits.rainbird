@@ -18,7 +18,7 @@
             Homey.hideLoadingOverlay();
 
             if (result.success !== true) {
-                Homey.alert(`Failed to connect, please check the details in the form`);
+                Homey.alert(`Failed to connect, please check the details in the form`, result.error);
             }
         });
     }
