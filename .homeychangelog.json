@@ -19,5 +19,8 @@
   },
   "1.2.0": {
     "en": "Better pairing, mention RC2 support"
+  },
+  "1.2.1": {
+    "en": "Fix pairing routine"
   }
 }
