@@ -63,9 +63,40 @@
             "filter": "driver_id=rainbird"
           }
         ]
+      },
+      {
+        "id": "rain_set_point_changed",
+        "title": {
+          "en": "Rain set point veranderd",
+          "nl": "Regen setpoint veranderd"
+        },
+        "hint": {
+          "en": "When the rain set point is changed"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
       }
     ],
     "conditions": [
+      {
+        "id": "rain_set_point_active",
+        "title": {
+          "en": "Rain set point !{{is|isn't}} reached",
+          "nl": "Regen setpoint !{{is|is niet}} bereikt"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      },
       {
         "id": "rainbird_is_active",
         "title": {
@@ -226,7 +257,8 @@
       "capabilities": [
         "active_zone",
         "zone_time_left",
-        "is_active"
+        "is_active",
+        "rain_set_point_reached"
       ],
       "platforms": [
         "local"
@@ -354,6 +386,18 @@
       "uiComponent": "sensor",
       "uiQuickAction": true,
       "icon": "/assets/capabilities/toggle.svg"
+    },
+    "rain_set_point_reached": {
+      "type": "boolean",
+      "title": {
+        "en": "Rain set point reached",
+        "nl": "Regen setpoint bereikt"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "uiQuickAction": true,
+      "icon": "/assets/capabilities/droplet-percent.svg"
     },
     "zone_time_left": {
       "type": "string",

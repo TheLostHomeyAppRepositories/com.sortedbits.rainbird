@@ -19,9 +19,26 @@
             "hint": {
                 "en": "When the Rain Bird has no active zones"
             }
+        },
+        {
+            "id": "rain_set_point_changed",
+            "title": {
+                "en": "Rain set point veranderd",
+                "nl": "Regen setpoint veranderd"
+            },
+            "hint": {
+                "en": "When the rain set point is changed"
+            }
         }
     ],
     "conditions": [
+        {
+            "id": "rain_set_point_active",
+            "title": {
+                "en": "Rain set point !{{is|isn't}} reached",
+                "nl": "Regen setpoint !{{is|is niet}} bereikt"
+            }
+        },
         {
             "id": "rainbird_is_active",
             "title": {

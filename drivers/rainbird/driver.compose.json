@@ -3,7 +3,7 @@
         "en": "Rain Bird"
     },
     "class": "other",
-    "capabilities": ["active_zone", "zone_time_left", "is_active"],
+    "capabilities": ["active_zone", "zone_time_left", "is_active", "rain_set_point_reached"],
     "platforms": ["local"],
     "connectivity": ["lan"],
     "images": {

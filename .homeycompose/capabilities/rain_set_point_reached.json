@@ -1,0 +1,12 @@
+{
+    "type": "boolean",
+    "title": {
+        "en": "Rain set point reached",
+        "nl": "Regen setpoint bereikt"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "uiQuickAction": true,
+    "icon": "/assets/capabilities/droplet-percent.svg"
+}

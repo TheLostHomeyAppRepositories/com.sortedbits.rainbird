@@ -56,6 +56,10 @@ class RainBirdDriver extends Homey.Driver {
         this.homey.flow.getConditionCard('rainbird_is_active').registerRunListener(async (args) => {
             return args.device.rainbirdIsActive();
         });
+
+        this.homey.flow.getConditionCard('rain_set_point_active').registerRunListener(async (args) => {
+            return args.device.rainSetPointActive();
+        });
     };
 
     connect = async (data: PairData): Promise<PairResult> => {
