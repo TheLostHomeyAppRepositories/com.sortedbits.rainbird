@@ -46,6 +46,10 @@ class RainbirdDevice extends Homey.Device {
         if (this.getCapabilityValue('rain_set_point_reached') !== rainSetPointReached) {
             const trigger = this.homey.flow.getDeviceTriggerCard('rain_set_point_changed');
             await trigger.trigger(this);
+
+            if (rainSetPointReached) {
+                await this.homey.flow.getDeviceTriggerCard('rain_set_point_reached').trigger(this);
+            }
         }
 
         await this.setCapabilityValue('rain_set_point_reached', rainSetPointReached);

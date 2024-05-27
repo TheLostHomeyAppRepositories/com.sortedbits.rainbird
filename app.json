@@ -67,11 +67,28 @@
       {
         "id": "rain_set_point_changed",
         "title": {
-          "en": "Rain set point veranderd",
+          "en": "Rain set point changed",
           "nl": "Regen setpoint veranderd"
         },
         "hint": {
           "en": "When the rain set point is changed"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=rainbird"
+          }
+        ]
+      },
+      {
+        "id": "rain_set_point_reached",
+        "title": {
+          "en": "Rain set point reached",
+          "nl": "Regen setpoint gehaald"
+        },
+        "hint": {
+          "en": "When the rain set point is reached"
         },
         "args": [
           {
