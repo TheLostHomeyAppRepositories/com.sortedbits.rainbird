@@ -22,6 +22,21 @@ class RainbirdDevice extends Homey.Device {
         return undefined;
     };
 
+    async updateRainSetPoint() {
+        const rainSetPointReached = this.rainbirdService.rainSetPointReached ?? false;
+
+        if (this.getCapabilityValue('rain_set_point_reached') !== rainSetPointReached) {
+            const trigger = this.homey.flow.getDeviceTriggerCard('rain_set_point_changed');
+            await trigger.trigger(this);
+
+            if (rainSetPointReached) {
+                await this.homey.flow.getDeviceTriggerCard('rain_set_point_reached').trigger(this);
+            }
+        }
+
+        await this.setCapabilityValue('rain_set_point_reached', rainSetPointReached);
+    }
+
     async getCurrentStatus(initial: boolean = false) {
         if (!this.rainbirdService) {
             return;
@@ -41,18 +56,7 @@ class RainbirdDevice extends Homey.Device {
 
         await this.setCapabilityValue('is_active', isInUse);
 
-        const rainSetPointReached = this.rainbirdService.rainSetPointReached ?? false;
-
-        if (this.getCapabilityValue('rain_set_point_reached') !== rainSetPointReached) {
-            const trigger = this.homey.flow.getDeviceTriggerCard('rain_set_point_changed');
-            await trigger.trigger(this);
-
-            if (rainSetPointReached) {
-                await this.homey.flow.getDeviceTriggerCard('rain_set_point_reached').trigger(this);
-            }
-        }
-
-        await this.setCapabilityValue('rain_set_point_reached', rainSetPointReached);
+        await this.updateRainSetPoint();
 
         if (currentZoneId) {
             const zone = this.zones.find((z) => z.index === currentZoneId);
@@ -126,6 +130,12 @@ class RainbirdDevice extends Homey.Device {
 
         this.rainbirdService.on('status', () => {
             this.getCurrentStatus().catch((e) => this.error(e));
+        });
+
+        this.rainbirdService.on('rain_sensor_state', async () => {
+            this.log('Rain sensor state changed');
+
+            await this.updateRainSetPoint();
         });
     }
 
